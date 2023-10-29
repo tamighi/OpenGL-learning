@@ -1,7 +1,7 @@
 # Define your variables
 OBJDIR = ./obj
 BINDIR = ./bin
-NAME = $(BINDIR)/hello
+NAME = $(BINDIR)/a.exe
 GLFWLIB = ./lib/libglfw3.a
 
 # Define the source files you want to compile
