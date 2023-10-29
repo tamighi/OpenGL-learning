@@ -2,7 +2,9 @@
 OBJDIR = ./obj
 BINDIR = ./bin
 NAME = $(BINDIR)/a.exe
-GLFWLIB = ./lib/libglfw3.a
+
+# Libraries
+LIBS = ./lib/*
 
 # Define the source files you want to compile
 SRCS = $(wildcard src/*.cpp)
@@ -19,7 +21,7 @@ all: $(NAME)
 
 # Linking the final executable
 $(NAME): $(OBJS) $(BINDIR)
-	$(CXX) -o $@ $< $(GLFWLIB) -lGL
+	$(CXX) -o $@ $< $(LIBS) -lGL
 
 # Compiling individual source files into object files
 $(OBJDIR)/%.o: src/%.cpp | $(OBJDIR)
