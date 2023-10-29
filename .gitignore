@@ -1,4 +1,7 @@
+# Output files
 obj/
-compile_commands.json
 bin/
+
+# Clang files
+compile_commands.json
 .cache/
