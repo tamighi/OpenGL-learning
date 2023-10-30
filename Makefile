@@ -6,6 +6,9 @@ NAME = $(BINDIR)/a.exe
 # Libraries
 LIBS = ./lib/*
 
+# Defines
+DEFS = -DGLEW_STATIC
+
 # Define the source files you want to compile
 SRCS = $(wildcard src/*.cpp)
 
@@ -14,7 +17,7 @@ OBJS = $(patsubst src/%.cpp,$(OBJDIR)/%.o,$(SRCS))
 
 # Set your compiler and compiler flags
 CXX = c++
-CXXFLAGS = -Wall -Wextra -Werror -I./include
+CXXFLAGS = -Wall -Wextra -Werror --debug -I./include $(DEFS)
 
 # Your build target
 all: $(NAME)
