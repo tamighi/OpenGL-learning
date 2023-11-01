@@ -1,5 +1,6 @@
 #include "GL/glew.h"
 #include "GLFW/glfw3.h"
+#include <GL/glext.h>
 #include <iostream>
 
 int main(void) {
@@ -24,6 +25,22 @@ int main(void) {
     return -1;
   }
 
+  /* Buffer here */
+  unsigned int buffer;
+
+  /* Generate a buffer an select it */
+  glGenBuffers(1, &buffer);
+  glBindBuffer(GL_ARRAY_BUFFER, buffer);
+
+  float positions[6] = {
+    -0.5f, -0.5f, 
+    0.0f, 0.5f,
+    0.5f, -0.5f
+  };
+
+  /* Attribute data to the buffer */
+  glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float), positions, GL_STATIC_DRAW);
+
   /* Loop until the user closes the window */
   while (!glfwWindowShouldClose(window)) {
     /* Render here */
@@ -32,9 +49,7 @@ int main(void) {
     // Draw triangle
     glBegin(GL_TRIANGLES);
 
-    glVertex2f(-0.5f, -0.5f);
-    glVertex2f(0.0f, 0.5f);
-    glVertex2f(0.5f, -0.5f);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
 
     glEnd();
 
