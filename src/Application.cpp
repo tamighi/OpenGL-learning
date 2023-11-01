@@ -33,13 +33,17 @@ int main(void) {
   glBindBuffer(GL_ARRAY_BUFFER, buffer);
 
   float positions[6] = {
-    -0.5f, -0.5f, 
+    -0.5f, -0.5f,
     0.0f, 0.5f,
     0.5f, -0.5f
   };
 
   /* Attribute data to the buffer */
   glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float), positions, GL_STATIC_DRAW);
+
+  /* Describe the layout of the attributes in the vertex and enables it*/
+  glEnableVertexAttribArray(0);
+  glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
 
   /* Loop until the user closes the window */
   while (!glfwWindowShouldClose(window)) {
