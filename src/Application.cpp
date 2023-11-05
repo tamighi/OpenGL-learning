@@ -7,31 +7,7 @@
 #include <sstream>
 #include <string>
 
-#define ASSERT(x)                                                              \
-  if (!(x))                                                                    \
-    __builtin_trap();
-
-#define GLCall(x)                                                              \
-  GLClearError();                                                              \
-  x;                                                                           \
-  ASSERT(!GLLogCall(#x, __FILE__, __LINE__));
-
-static void GLClearError() {
-  while (glGetError() != GL_NO_ERROR)
-    ;
-}
-
-static bool GLLogCall(const char *function, const char *file, int line) {
-  bool isError = false;
-
-  while (GLenum error = glGetError()) {
-    std::cout << "Error " << error << " in function " << function << " of file "
-              << file << " in line " << line << std::endl;
-    isError = true;
-  }
-
-  return isError;
-}
+#include "Renderer.h"
 
 static std::string ParseShader(const std::string &filepath) {
   std::ifstream stream(filepath);
