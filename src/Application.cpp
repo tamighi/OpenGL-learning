@@ -8,6 +8,8 @@
 #include <string>
 
 #include "Renderer.h"
+#include "VertexBuffer.h"
+#include "IndexBuffer.h"
 
 static std::string ParseShader(const std::string &filepath) {
   std::ifstream stream(filepath);
@@ -107,15 +109,7 @@ int main(void) {
   GLCall(glBindVertexArray(vao));
 
   /* Array buffer */
-  unsigned int buffer;
-  GLCall(glGenBuffers(1, &buffer));
-
-  /* Select the vertex array */
-  GLCall(glBindBuffer(GL_ARRAY_BUFFER, buffer));
-
-  /* Attribute data to the buffer */
-  GLCall(glBufferData(GL_ARRAY_BUFFER, 4 * 2 * sizeof(float), positions,
-                      GL_STATIC_DRAW));
+  VertexBuffer vb(positions, 4 * 2 * sizeof(float));
 
   /* Describe the layout of the attributes in the vertex and enables it*/
   GLCall(glEnableVertexAttribArray(0));
@@ -123,13 +117,7 @@ int main(void) {
   GLCall(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0));
 
   /* Index buffer */
-  unsigned int ibo;
-  GLCall(glGenBuffers(1, &ibo));
-  GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
-
-  /* Attribute data to the buffer */
-  GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int),
-                      indices, GL_STATIC_DRAW));
+  IndexBuffer ib(indices, 6);
 
   /* Create shaders */
   std::string vertexShader = ParseShader("res/shaders/Basic.vertex.shader");
@@ -160,7 +148,7 @@ int main(void) {
     GLCall(glBindVertexArray(vao));
 
     /* Select the index buffer */
-    GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
+    ib.Bind();
 
     /* Draw call */
     GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
