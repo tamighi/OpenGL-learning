@@ -98,6 +98,10 @@ int main(void) {
   if (!glfwInit())
     return -1;
 
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+  glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
   /* Create a windowed mode window and its OpenGL context */
   window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
   if (!window) {
@@ -121,25 +125,29 @@ int main(void) {
 
   unsigned int indices[] = {0, 1, 2, 2, 3, 0};
 
-  /* Buffer here */
-  unsigned int buffer;
+  /* Vertex array buffer */
+  unsigned int vao;
+  GLCall(glGenVertexArrays(1, &vao));
+  GLCall(glBindVertexArray(vao));
 
-  /* Generate a buffer an select it */
+  /* Array buffer */
+  unsigned int buffer;
   GLCall(glGenBuffers(1, &buffer));
+
+  /* Select the vertex array */
   GLCall(glBindBuffer(GL_ARRAY_BUFFER, buffer));
 
   /* Attribute data to the buffer */
-  GLCall(glBufferData(GL_ARRAY_BUFFER, 6 * 2 * sizeof(float), positions,
+  GLCall(glBufferData(GL_ARRAY_BUFFER, 4 * 2 * sizeof(float), positions,
                       GL_STATIC_DRAW));
 
   /* Describe the layout of the attributes in the vertex and enables it*/
   GLCall(glEnableVertexAttribArray(0));
+  /* Links buffer with vao at index 0 */
   GLCall(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0));
 
-  /* Buffer here */
+  /* Index buffer */
   unsigned int ibo;
-
-  /* Generate a buffer an select it */
   GLCall(glGenBuffers(1, &ibo));
   GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
 
@@ -148,15 +156,18 @@ int main(void) {
                       indices, GL_STATIC_DRAW));
 
   /* Create shaders */
-
   std::string vertexShader = ParseShader("res/shaders/Basic.vertex.shader");
   std::string fragmentShader = ParseShader("res/shaders/Basic.fragment.shader");
 
   unsigned int shader = CreateShader(vertexShader, fragmentShader);
-  GLCall(glUseProgram(shader));
 
   GLCall(int location = glGetUniformLocation(shader, "u_Color"));
-  ASSERT(location != -1);
+
+  /* Unbind buffers */
+  GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
+  GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
+  GLCall(glBindVertexArray(0));
+  GLCall(glUseProgram(0));
 
   float r = 0.0f;
   float increment = 0.05f;
@@ -165,10 +176,21 @@ int main(void) {
     /* Render here */
     glClear(GL_COLOR_BUFFER_BIT);
 
+    /* Use the shader and set it's uniform color */
+    GLCall(glUseProgram(shader));
     GLCall(glUniform4f(location, r, 0.3f, 0.8f, 1.0f));
+
+    /* Select the vertex array buffer */
+    GLCall(glBindVertexArray(vao));
+
+    /* Select the index buffer */
+    GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
+
+    /* Draw call */
     GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
 
-    if (r > 1.0f || r < 0.0f) increment *= -1;
+    if (r > 1.0f || r < 0.0f)
+      increment *= -1;
     r += increment;
 
     /* Swap front and back buffers */
