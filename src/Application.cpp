@@ -47,7 +47,7 @@ static std::string ParseShader(const std::string &filepath) {
 
 static unsigned int CompileShader(unsigned int type,
                                   const std::string &source) {
-  unsigned int id = glCreateShader(type);
+  GLCall(unsigned int id = glCreateShader(type));
   const char *src = source.c_str();
   GLCall(glShaderSource(id, 1, &src, nullptr));
   GLCall(glCompileShader(id));
@@ -108,6 +108,8 @@ int main(void) {
   /* Make the window's context current */
   glfwMakeContextCurrent(window);
 
+  glfwSwapInterval(1);
+
   if (glewInit() != GLEW_OK) {
     std::cout << "Error" << std::endl;
     return -1;
@@ -127,7 +129,8 @@ int main(void) {
   GLCall(glBindBuffer(GL_ARRAY_BUFFER, buffer));
 
   /* Attribute data to the buffer */
-  GLCall(glBufferData(GL_ARRAY_BUFFER, 6 * 2 * sizeof(float), positions, GL_STATIC_DRAW));
+  GLCall(glBufferData(GL_ARRAY_BUFFER, 6 * 2 * sizeof(float), positions,
+                      GL_STATIC_DRAW));
 
   /* Describe the layout of the attributes in the vertex and enables it*/
   GLCall(glEnableVertexAttribArray(0));
@@ -141,8 +144,8 @@ int main(void) {
   GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo));
 
   /* Attribute data to the buffer */
-  GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int), indices,
-               GL_STATIC_DRAW));
+  GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int),
+                      indices, GL_STATIC_DRAW));
 
   /* Create shaders */
 
@@ -152,12 +155,21 @@ int main(void) {
   unsigned int shader = CreateShader(vertexShader, fragmentShader);
   GLCall(glUseProgram(shader));
 
+  GLCall(int location = glGetUniformLocation(shader, "u_Color"));
+  ASSERT(location != -1);
+
+  float r = 0.0f;
+  float increment = 0.05f;
   /* Loop until the user closes the window */
   while (!glfwWindowShouldClose(window)) {
     /* Render here */
     glClear(GL_COLOR_BUFFER_BIT);
 
+    GLCall(glUniform4f(location, r, 0.3f, 0.8f, 1.0f));
     GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
+
+    if (r > 1.0f || r < 0.0f) increment *= -1;
+    r += increment;
 
     /* Swap front and back buffers */
     glfwSwapBuffers(window);
