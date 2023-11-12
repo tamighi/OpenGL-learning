@@ -10,6 +10,8 @@
 #include "Renderer.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
+#include "VertexArray.h"
+#include "VertexBufferLayout.h"
 
 static std::string ParseShader(const std::string &filepath) {
   std::ifstream stream(filepath);
@@ -104,17 +106,14 @@ int main(void) {
   unsigned int indices[] = {0, 1, 2, 2, 3, 0};
 
   /* Vertex array buffer */
-  unsigned int vao;
-  GLCall(glGenVertexArrays(1, &vao));
-  GLCall(glBindVertexArray(vao));
-
+  VertexArray va;
   /* Array buffer */
   VertexBuffer vb(positions, 4 * 2 * sizeof(float));
 
-  /* Describe the layout of the attributes in the vertex and enables it*/
-  GLCall(glEnableVertexAttribArray(0));
-  /* Links buffer with vao at index 0 */
-  GLCall(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0));
+  VertexBufferLayout layout;
+  layout.Push<float>(2);
+
+  va.AddBuffer(vb, layout);
 
   /* Index buffer */
   IndexBuffer ib(indices, 6);
@@ -145,8 +144,7 @@ int main(void) {
     GLCall(glUniform4f(location, r, 0.3f, 0.8f, 1.0f));
 
     /* Select the vertex array buffer */
-    GLCall(glBindVertexArray(vao));
-
+    va.Bind();
     /* Select the index buffer */
     ib.Bind();
 
