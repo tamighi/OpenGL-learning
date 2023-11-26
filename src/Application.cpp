@@ -7,12 +7,12 @@
 #include <sstream>
 #include <string>
 
-#include "Renderer.h"
-#include "VertexBuffer.h"
 #include "IndexBuffer.h"
-#include "VertexArray.h"
-#include "VertexBufferLayout.h"
+#include "Renderer.h"
 #include "Shader.h"
+#include "VertexArray.h"
+#include "VertexBuffer.h"
+#include "VertexBufferLayout.h"
 
 int main(void) {
   GLFWwindow *window;
@@ -62,7 +62,8 @@ int main(void) {
   IndexBuffer ib(indices, 6);
 
   /* Create shaders */
-  Shader shader("res/shaders/Basic.vertex.shader", "res/shaders/Basic.fragment.shader");
+  Shader shader("res/shaders/Basic.vertex.shader",
+                "res/shaders/Basic.fragment.shader");
 
   /* Unbind buffers */
   va.Unbind();
@@ -70,24 +71,20 @@ int main(void) {
   shader.Unbind();
   ib.Unbind();
 
+  Renderer renderer;
+
   float r = 0.0f;
   float increment = 0.05f;
   /* Loop until the user closes the window */
   while (!glfwWindowShouldClose(window)) {
     /* Render here */
-    glClear(GL_COLOR_BUFFER_BIT);
+    renderer.Clear();
 
     /* Use the shader and set it's uniform color */
     shader.Bind();
     shader.SetUniform4f("u_Color", r, 0.3f, 0.8f, 1.0f);
 
-    /* Select the vertex array buffer */
-    va.Bind();
-    /* Select the index buffer */
-    ib.Bind();
-
-    /* Draw call */
-    GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
+    renderer.Draw(va, ib, shader);
 
     if (r > 1.0f || r < 0.0f)
       increment *= -1;
